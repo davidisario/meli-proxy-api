@@ -55,19 +55,19 @@ public class DataProxyService implements IDataProxyService{
 
 		if(start != null) {
 			query.append( "AND  date >= :start  "); 
-			parameters.addValue("start", start, Types.DATE);
+			parameters.addValue("start", start);
 		}
 		
 		if(end != null) {
 			query.append( "AND  date <= :end  "); 
-			parameters.addValue("end", end, Types.DATE);
+			parameters.addValue("end", end);
 		}
 		
 		query.append( "GROUP BY resource ORDER BY count DESC  LIMIT :limit");
 		
 		parameters.addValue("limit", limit, Types.SMALLINT);
 		
-		log.info("QUERY [{}]", query);
+		log.debug("QUERY [{}]", query);
 		
 		top = namedJdbcTemplate.query(query.toString(), parameters, new TopResourceMapper());
 		
@@ -97,19 +97,19 @@ public class DataProxyService implements IDataProxyService{
 
 		if(start != null) {
 			query.append( "AND  date >= :start  "); 
-			parameters.addValue("start", start, Types.DATE);
+			parameters.addValue("start", start);
 		}
 		
 		if(end != null) {
 			query.append( "AND  date <= :end  "); 
-			parameters.addValue("end", end, Types.DATE);
+			parameters.addValue("end", end);
 		}
 		
 		query.append( "GROUP BY ip ORDER BY count DESC  LIMIT :limit");
 		
 		parameters.addValue("limit", limit, Types.SMALLINT);
 		
-		log.info("QUERY [{}]", query);
+		log.debug("QUERY [{}]", query);
 		
 		top = namedJdbcTemplate.query(query.toString(), parameters, new TopIpMapper());
 		
@@ -141,19 +141,19 @@ public class DataProxyService implements IDataProxyService{
 
 		if(start != null) {
 			query.append( "AND  date >= :start  "); 
-			parameters.addValue("start", start, Types.DATE);
+			parameters.addValue("start", start);
 		}
 		
 		if(end != null) {
 			query.append( "AND  date <= :end  "); 
-			parameters.addValue("end", end, Types.DATE);
+			parameters.addValue("end", end);
 		}
 		
 		query.append( "GROUP BY ip,resource ORDER BY count DESC  LIMIT :limit");
 		
 		parameters.addValue("limit", limit, Types.SMALLINT);
 		
-		log.info("QUERY [{}]", query);
+		log.debug("QUERY [{}]", query);
 		
 		top = namedJdbcTemplate.query(query.toString(), parameters, new TopResourceMapper());
 		
@@ -177,25 +177,25 @@ public class DataProxyService implements IDataProxyService{
 
 		int hour = LocalDateTime.now().getHour();
 		
-		log.info("dateString {}",dateString );
-		log.info("hour {}",hour );
+		log.debug("dateString {}",dateString );
+		log.debug("hour {}",hour );
 		
 		
 		Date startDate = com.mx.meli.data.proxy.utils.DateUtils.getDateByString( dateString + " 00:00:00" , "yyyy-MM-dd HH:mm:ss");
 		Date endDate = DateUtils.addHours(startDate, 1); 
 		
 		
-		for (int i = 0; i < hour; i++) {
+		for (int i = 0; i <= hour; i++) {
 			
-			log.info("startDate {} ", startDate);
-			log.info("endDate {} ", endDate);
+			log.debug("startDate {} ", startDate);
+			log.debug("endDate {} ", endDate);
 			
 			List<TopBO> tops = execQuery(startDate , endDate);
 			
 			insertStats( tops, stats,  i ) ;
 			
 			startDate = DateUtils.addHours(startDate, 1); 
-			endDate   = DateUtils.addHours(endDate, 2); 
+			endDate   = DateUtils.addHours(endDate, 1); 
 			
 		}
 		
@@ -210,7 +210,7 @@ public class DataProxyService implements IDataProxyService{
 			 ResourceStatsBO resourceStatsBO = new ResourceStatsBO( entry.getKey(), entry.getValue() );
 			 response.add(resourceStatsBO);
 		 }
-		 log.info("response list final {}",response.size());
+	
 		
 		 return response;
 	}
@@ -234,7 +234,7 @@ public class DataProxyService implements IDataProxyService{
 			
 		}
 		
-		 log.info("res map {}",stats);
+		 log.debug("res map {}",stats);
 		
 	}
 	
@@ -254,22 +254,22 @@ public class DataProxyService implements IDataProxyService{
 
 		if(startDate != null) {
 			query.append( "AND  date >= :startDate  "); 
-			parameters.addValue("startDate", startDate, Types.DATE);
+			parameters.addValue("startDate", startDate);
 		}
 		
 		if(endDate != null) {
 			query.append( "AND  date < :endDate  "); 
-			parameters.addValue("endDate", endDate, Types.DATE);
+			parameters.addValue("endDate", endDate);
 		}
 		
 		query.append( "GROUP BY resource ORDER BY count DESC ");
 	
 		
-		log.info("QUERY [{}]", query);
+		log.debug("QUERY [{}]", query);
 		
 		tops = namedJdbcTemplate.query(query.toString(), parameters, new TopResourceMapper());
 		
-		 log.info("tops {}",tops);
+		
 		 
 		if(tops == null) {
 			tops = new  ArrayList<>();
